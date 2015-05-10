@@ -2,15 +2,17 @@
 
 use_gpu = 1;
 caffe('set_device', 1);
-model_def_file = '/home/karpathy/caffe2/models/vgg_ilsvrc_16/deploy_features.prototxt';
-model_file = '/home/karpathy/caffe2/models/vgg_ilsvrc_16/VGG_ILSVRC_16_layers.caffemodel';
+% model_def_file = '/home/karpathy/caffe2/models/vgg_ilsvrc_16/deploy_features.prototxt';
+% model_file = '/home/karpathy/caffe2/models/vgg_ilsvrc_16/VGG_ILSVRC_16_layers.caffemodel';
+model_def_file = 'deploy_features.prototxt'
+model_file = '/Users/anandsampat/Downloads/VGG_ILSVRC_16_layers.caffemodel'
 batch_size = 10;
 
 matcaffe_init(use_gpu, model_def_file, model_file);
 
 %% input files spec
 
-root_path = '/data2/karpathy/flickr30k/';
+root_path = '/Users/anandsampat/Projects/224d_project/data/flickr8k/';
 fs = textread([root_path 'all_imgs.txt'], '%s');
 N = length(fs);
 

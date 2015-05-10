@@ -98,8 +98,8 @@ if args.gpu:
 else:
     caffe.set_mode_cpu()
 
-net = caffe.Net(args.model_def, args.model)
-caffe.set_phase_test()
+net = caffe.Net(args.model_def, args.model, caffe.TEST)
+# caffe.set_phase_test()
 
 filenames = []
 with open(args.files) as fp:

@@ -154,6 +154,7 @@ class LSTMGenerator:
     dHin = np.zeros(Hin.shape)
     dC = np.zeros(C.shape)
     dX = np.zeros(X.shape)
+    
     for t in reversed(xrange(n)):
 
       if tanhC_version:
