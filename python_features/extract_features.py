@@ -95,7 +95,7 @@ def batch_predict(filenames, net):
 
 if args.gpu:
     caffe.set_mode_gpu()
-else:
+else:   
     caffe.set_mode_cpu()
 
 net = caffe.Net(args.model_def, args.model, caffe.TEST)

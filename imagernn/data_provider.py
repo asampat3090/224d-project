@@ -23,6 +23,7 @@ class BasicDataProvider:
     print 'BasicDataProvider: reading %s' % (features_path, )
     features_struct = scipy.io.loadmat(features_path)
     self.features = features_struct['feats']
+    print self.features.shape
 
     # group images by their train/val/test split into a dictionary -> list structure
     self.split = defaultdict(list)

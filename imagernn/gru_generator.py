@@ -53,7 +53,7 @@ class GRUGenerator:
       if not predict_mode: # and we are in training mode
         scale = 1.0 / (1.0 - drop_prob_encoder)
         U = (np.random.rand(*(X.shape)) < (1 - drop_prob_encoder)) * scale # generate scaled mask
-        X *= U # drop!
+        X *= U # drop! 
 
     # follows http://arxiv.org/pdf/1409.2329.pdf
     WGRU = model['WGRU']

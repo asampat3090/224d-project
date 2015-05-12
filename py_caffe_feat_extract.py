@@ -211,7 +211,7 @@ if __name__ == '__main__':
     parser.add_argument('--model_path', dest='model_path',type=str,  help='Path to VGG_ILSVRC_16_layers pretrained model weight file i.e VGG_ILSVRC_16_layers.caffemodel')
     parser.add_argument('-i',dest='input_directory',help='Path to Directory containing images to be processed.')
     parser.add_argument('--filter',default = None ,dest='filter', help='Text file containing images names in the input directory to be processed. If no argument provided all images are processed.')
-    parser.add_argument('--WITH_GPU', action='store_true', dest='WITH_GPU', help = 'Caffe uses GPU for feature extraction')
+    parser.add_argument('--WITH_GPU', action='store_true', dest='WITH_GPU', help = 'Caffe uses GPU for feature extlsraction')
     parser.add_argument('-o',dest='out_directory',help='Output directory to store the generated features')
     
     args = parser.parse_args()
