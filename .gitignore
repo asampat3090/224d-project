@@ -1,2 +1,8 @@
 *.pyc
-cv/*.p
+cv/model_checkpoint_flickr8k_Shabaz.stanford.edu_baseline_17.22.p
+cv/model_checkpoint_coco_visionlab43.stanford.edu_lstm_11.14.p
+Flicker8k_Dataset/
+Flickr8k_text/
+cv/flickr8k_cnn_lstm_v1.p
+example_images.tar.gz
+
