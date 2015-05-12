@@ -3,6 +3,7 @@ import argparse
 
 import numpy as np
 from scipy.misc import imread, imresize
+import scipy.io as io
 
 import cPickle as pickle
 
@@ -109,6 +110,9 @@ with open(args.files) as fp:
 
 allftrs = batch_predict(filenames, net)
 
-# store the features in a pickle file
-with open(args.out, 'w') as fp:
-    pickle.dump(allftrs, fp)
+# # store the features in a pickle file
+# with open(args.out, 'w') as fp:
+#     pickle.dump(allftrs, fp)
+
+# save to mat file 
+io.savemat('my_feats',{'feats':allftrs.T})
