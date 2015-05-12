@@ -1,2 +1,3 @@
 *.pyc
-cv/*.p
+cv/model_checkpoint_flickr8k_Shabaz.stanford.edu_baseline_17.22.p
+cv/model_checkpoint_coco_visionlab43.stanford.edu_lstm_11.14.p
