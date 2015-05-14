@@ -8,6 +8,7 @@ import socket
 import os
 import cPickle as pickle
 import math
+import pdb
 
 from imagernn.data_provider import getDataProvider
 from imagernn.solver import Solver
@@ -30,8 +31,13 @@ def main(params):
     print 'creating dump folder ' + dump_folder
     os.system('mkdir -p ' + dump_folder)
     
+  ## ANAND - CHANGE TEST PATH
+
   # fetch the data provider
-  dp = getDataProvider(dataset)
+  # dp = getDataProvider(dataset)
+  # pdb.set_trace()
+  dp = getDataProvider("example_images")
+  
 
   misc = {}
   misc['wordtoix'] = checkpoint['wordtoix']
@@ -47,9 +53,13 @@ def main(params):
   n = 0
   all_references = []
   all_candidates = []
+
   for img in dp.iterImages(split = 'test', max_images = max_images):
     n+=1
     print 'image %d/%d:' % (n, max_images)
+    
+    # pdb.set_trace()
+
     references = [' '.join(x['tokens']) for x in img['sentences']] # as list of lists of tokens
     kwparams = { 'beam_size' : params['beam_size'] }
     Ys = BatchGenerator.predict([{'image':img}], model, checkpoint_params, **kwparams)

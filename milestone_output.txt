@@ -1,0 +1,55 @@
+BLEU = 59.1/38.9/16.5/0.0 (BP=1.000, ratio=1.073, hyp_len=44, ref_len=41)
+parsed parameters:
+{
+  "result_struct_filename": "result_struct.json", 
+  "beam_size": 1, 
+  "checkpoint_path": "cv/model_checkpoint_coco_visionlab43.stanford.edu_lstm_11.14.p", 
+  "dump_folder": "", 
+  "max_images": -1
+}
+loading checkpoint cv/model_checkpoint_coco_visionlab43.stanford.edu_lstm_11.14.p
+Initializing data provider for dataset example_images...
+BasicDataProvider: reading data/example_images/dataset.json
+BasicDataProvider: reading data/example_images/vgg_feats.mat
+(4096, 5)
+image 1/-1:
+GT: a dog jumping from a stone in a park
+GT: a white dog jumping over grass
+GT: a dog playing in a park
+GT: a dog running in a park
+GT: a dog jumping onto the ground in a park
+PRED: (-11.495168) a dog is standing in the grass with a frisbee
+image 2/-1:
+GT: a brown bear in  a field of flowers
+GT: a bear looking over a field
+GT: a brown bear in a park
+GT: an animal in a field of white flowers
+GT: a brown bear sitting in a field
+PRED: (-9.023607) a brown bear is standing in the grass
+image 3/-1:
+GT: a brown man sitting at a desk working on his laptop
+GT: a sitting man drinks coffee near his laptop
+GT: a brown man smiling at his laptop
+GT: a man with a yellow shirt working on his laptop
+GT: a man wearing a yellow shirt smiling at his laptop
+PRED: (-8.376203) a man sitting on a couch with a laptop
+image 4/-1:
+GT: a cabinet with a stack of papers on top
+GT: a group of drawers with paper on top
+GT: a beige set of drawers with white paper on top
+GT: lots of white paper on top of a cabinet
+GT: exam papers on top of a cabinet with chairs beside it
+PRED: (-9.504242) a kitchen with a stove and a refrigerator
+image 5/-1:
+GT: a trash can with chairs beside it and a man with a laptop
+GT: a black trash can with a man working on a laptop behind it
+GT: a large trash can in a large room
+GT: a trash can with chairs in a room
+GT: a trash can with a sign on it and chairs
+PRED: (-8.850521) a desk with a laptop and a computer monitor
+writing intermediate files into eval/
+invoking eval/multi-bleu.perl script...
+evaluating test performance in batches of 100
+evaluated 25 sentences and got perplexity = 15.452394
+perplexity of ground truth words based on dictionary of 8791 words: 15.452394
+saving result struct to result_struct.json

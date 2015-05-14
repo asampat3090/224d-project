@@ -4,6 +4,7 @@ import random
 import scipy.io
 import codecs
 from collections import defaultdict
+import pdb
 
 class BasicDataProvider:
   def __init__(self, dataset):
@@ -16,6 +17,7 @@ class BasicDataProvider:
     # load the dataset into memory
     dataset_path = os.path.join(self.dataset_root, 'dataset.json')
     print 'BasicDataProvider: reading %s' % (dataset_path, )
+    # pdb.set_trace()
     self.dataset = json.load(open(dataset_path, 'r'))
 
     # load the image features into memory
@@ -113,5 +115,5 @@ class BasicDataProvider:
 
 def getDataProvider(dataset):
   """ we could intercept a special dataset and return different data providers """
-  assert dataset in ['flickr8k', 'flickr30k', 'coco'], 'dataset %s unknown' % (dataset, )
+  assert dataset in ['flickr8k', 'flickr30k', 'coco','example_images'], 'dataset %s unknown' % (dataset, )
   return BasicDataProvider(dataset)

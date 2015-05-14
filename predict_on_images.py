@@ -71,7 +71,7 @@ def main(params):
 
     # build up the output
     img_blob = {}
-    img_blob['img_path'] = img['local_file_path']
+    img_blob['img_path'] = img[' local_file_path']
 
     # encode the top prediction
     top_predictions = Ys[0] # take predictions for the first (and only) image we passed in
