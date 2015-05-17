@@ -8,6 +8,7 @@ import os
 import cPickle as pickle
 import math
 import scipy.io
+import pdb
 
 from imagernn.solver import Solver
 from imagernn.imagernn_utils import decodeGenerator, eval_split
@@ -30,7 +31,8 @@ def main(params):
   dim = 300
   # load the checkpoint
   checkpoint_path = params['checkpoint_path']
-  glove_dict_path = '../../cs224d/project/vecDict.pickle'
+  # load glove vect dict
+  glove_dict_path = '../vecDict.pickle'
   with open(glove_dict_path, 'rb') as handle:
     vec_dict = pickle.load(handle)
 
@@ -118,7 +120,7 @@ if __name__ == "__main__":
 
   parser = argparse.ArgumentParser()
   parser.add_argument('checkpoint_path', type=str, help='the input checkpoint')
-  parser.add_argument('-r', '--root_path', default='example_images', type=str, help='folder with the images, tasks.txt file, and corresponding vgg_feats.mat file')
+  parser.add_argument('-r', '--root_path', default='data/example_images', type=str, help='folder with the images, tasks.txt file, and corresponding vgg_feats.mat file')
   parser.add_argument('-b', '--beam_size', type=int, default=1, help='beam size in inference. 1 indicates greedy per-word max procedure. Good value is approx 20 or so, and more = better.')
 
   args = parser.parse_args()

@@ -4,6 +4,8 @@ import argparse
 import numpy as np
 from scipy.misc import imread, imresize
 import scipy.io as io
+import string
+import pdb
 
 import cPickle as pickle
 
@@ -26,6 +28,8 @@ args = parser.parse_args()
 
 caffepath = args.caffe + '/python'
 sys.path.append(caffepath)
+IMAGE_PATH = string.join(args.files.split('/')[0:-1],'/')
+sys.path.append(IMAGE_PATH)
 
 import matplotlib
 matplotlib.use('Agg')
@@ -58,7 +62,8 @@ def batch_predict(filenames, net):
     N, C, H, W = net.blobs[net.inputs[0]].data.shape
     F = net.blobs[net.outputs[0]].data.shape[1]
     Nf = len(filenames)
-    Hi, Wi, _ = imread(filenames[0]).shape
+    #pdb.set_trace()
+    Hi, Wi, _ = imread(IMAGE_PATH + '/' + filenames[0]).shape
     allftrs = np.zeros((Nf, F))
     for i in range(0, Nf, N):
         in_data = np.zeros((N, C, H, W), dtype=np.float32)
@@ -69,7 +74,7 @@ def batch_predict(filenames, net):
 
         batch_images = np.zeros((Nb, 3, H, W))
         for j,fname in enumerate(batch_filenames):
-            im = imread(fname)
+            im = imread(IMAGE_PATH + '/' + fname)
             if len(im.shape) == 2:
                 im = np.tile(im[:,:,np.newaxis], (1,1,3))
             # RGB -> BGR
@@ -101,8 +106,8 @@ if args.gpu:
 else:   
     caffe.set_mode_cpu()
 
-net = caffe.Net(args.model_def, args.model, caffe.TEST)
-# caffe.set_phase_test()
+net = caffe.Net(args.model_def, args.model)
+caffe.set_phase_test()
 
 filenames = []
 with open(args.files) as fp:
@@ -117,4 +122,5 @@ allftrs = batch_predict(filenames, net)
 #     pickle.dump(allftrs, fp)
 
 # save to mat file 
-io.savemat('my_feats',{'feats':allftrs.T})
+print "Saving file to vgg_feats.mat..."
+io.savemat(IMAGE_PATH + '/vgg_feats',{'feats':allftrs.T})
