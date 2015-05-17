@@ -17,7 +17,7 @@
     <script type="text/javascript">
       $(document).ready(
         function(){
-          $('#classifyfile').attr('disabled',true);
+          $('#captionlyfile').attr('disabled',true);
           $('#imagefile').change(
             function(){
               if ($(this).val()){
@@ -57,7 +57,7 @@
 
       <div>
         <h2>Classification</h2>
-        <a href="/classify_url?imageurl=http%3A%2F%2Fi.telegraph.co.uk%2Fmultimedia%2Farchive%2F02351%2Fcross-eyed-cat_2351472k.jpg">Click for a Quick Example</a>
+        <a href="/captionly_url?imageurl=http%3A%2F%2Fi.telegraph.co.uk%2Fmultimedia%2Farchive%2F02351%2Fcross-eyed-cat_2351472k.jpg">Click for a Quick Example</a>
       </div>
 
       {% if has_result %}
@@ -108,18 +108,18 @@
       <hr>
       {% endif %}
 
-      <form role="form" action="classify_url" method="get">
+      <form role="form" action="captionly_url" method="get">
         <div class="form-group">
           <div class="input-group">
             <input type="text" class="form-control" name="imageurl" id="imageurl" placeholder="Provide an image URL">
             <span class="input-group-btn">
-              <input class="btn btn-primary" value="Classify URL" type="submit" id="classifyurl"></input>
+              <input class="btn btn-primary" value="Classify URL" type="submit" id="captionlyurl"></input>
             </span>
           </div><!-- /input-group -->
         </div>
       </form>
 
-      <form id="formupload" class="form-inline" role="form" action="classify_upload" method="post" enctype="multipart/form-data">
+      <form id="formupload" class="form-inline" role="form" action="captionly_upload" method="post" enctype="multipart/form-data">
         <div class="form-group">
           <label for="imagefile">Or upload an image:</label>
           <input type="file" name="imagefile" id="imagefile">

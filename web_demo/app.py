@@ -43,7 +43,7 @@ matplotlib.use('Agg')
 import caffe
 
 ROOT_DIRNAME = os.path.abspath(os.path.dirname(__file__) + '/..')
-UPLOAD_FOLDER = '/tmp/captionly_demos_uploads'
+UPLOAD_FOLDER = '/tmp/captionly_demo_uploads'
 ALLOWED_IMAGE_EXTENSIONS = set(['png', 'bmp', 'jpg', 'jpe', 'jpeg', 'gif'])
 
 # Obtain the flask app object
@@ -94,7 +94,7 @@ def captionly_upload():
             result=(False, 'Cannot open uploaded image.')
         )
 
-    result = app.clf.classify_image(image)
+    result = app.clf.predict_sentence(image)
     return flask.render_template(
         'index.html', has_result=True, result=result,
         imagesrc=embed_image_html(image)
@@ -121,8 +121,8 @@ def allowed_file(filename):
 class ImageCaptioner(object):
 
     default_args = {
-        'cnn_model_def' : '../python_features/deploy_features.prototext',
-        'cnn_model_params' : '~/VGG_ILSVRC_16_layers.caffemodel',
+        'cnn_model_def' : '../python_features/deploy_features.prototxt',
+        'cnn_model_params' : '../../VGG_ILSVRC_16_layers.caffemodel',
         'rnn_model' : '../cv/model_checkpoint_coco_visionlab43.stanford.edu_lstm_11.14.p'
     }
     # default_args = {
@@ -147,10 +147,11 @@ class ImageCaptioner(object):
     # def __init__(self, model_def_file, pretrained_model_file, mean_file,
     #              raw_scale, class_labels_file, bet_file, image_dim, gpu_mode):
         
-    def __init__(self,caffe_path, cnn_model_def, cnn_model_params,rnn_model,gpu_mode=True):
+    def __init__(self, cnn_model_def, cnn_model_params,rnn_model,raw_scale,image_dim,gpu_mode=True):
         
         logging.info('Loading CNN and associated files...')
-        if gpu_mode:
+        """
+	if gpu_mode:
             caffe.set_mode_gpu()
         else:
             caffe.set_mode_cpu()
@@ -176,6 +177,7 @@ class ImageCaptioner(object):
         # I am setting the value to 0.1 as a quick, simple model.
         # We could use better psychological models here...
         self.bet['infogain'] -= np.array(self.bet['preferences']) * 0.1
+	"""
 
     def predict_sentence(self, image):
         try:
@@ -249,24 +251,6 @@ class ImageCaptioner(object):
                         print 'Done %d/%d files' % (i+len(batch_range), len(filenames))
 
                         return allftrs
-
-
-                        if args.gpu:
-                            caffe.set_mode_gpu()
-                        else:   
-                            caffe.set_mode_cpu()
-
-                            net = caffe.Net(args.model_def, args.model)
-                            caffe.set_phase_test()
-
-                            filenames = []
-                            with open(args.files) as fp:
-                                for line in fp:
-                                    filename = line.strip().split()[0]
-                                    filenames.append(filename)
-
-                                    allftrs = batch_predict(filenames, net)
-
 
             if args.gpu:
                 caffe.set_mode_gpu()
@@ -397,11 +381,12 @@ def start_from_terminal(app):
         action='store_true', default=False)
 
     opts, args = parser.parse_args()
-    ImagenetClassifier.default_args.update({'gpu_mode': opts.gpu})
+    ImageCaptioner.default_args.update({'gpu_mode': opts.gpu})
 
     # Initialize classifier + warm start by forward for allocation
-    app.clf = ImagenetClassifier(**ImagenetClassifier.default_args)
-    app.clf.net.forward()
+    app.clf = ImageCaptioner(**ImageCaptioner.default_args)
+    #app.clf.net.forward()
+
 
     if opts.debug:
         app.run(debug=True, host='0.0.0.0', port=opts.port)
