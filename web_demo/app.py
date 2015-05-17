@@ -53,8 +53,8 @@ app = flask.Flask(__name__)
 def index():
     return flask.render_template('index.html', has_result=False)
 
-@app.route('/caption_url', methods=['GET'])
-def classify_url():
+@app.route('/captionly_url', methods=['GET'])
+def captionly_url():
     imageurl = flask.request.args.get('imageurl', '')
     try:
         string_buffer = StringIO.StringIO(
@@ -71,12 +71,12 @@ def classify_url():
         )
 
     logging.info('Image: %s', imageurl)
-    result = app.clf.classify_image(image)
+    result = app.clf.predict_sentence(image)
     return flask.render_template(
         'index.html', has_result=True, result=result, imagesrc=imageurl)
 
 @app.route('/captionly_upload', methods=['POST'])
-def classify_upload():
+def captionly_upload():
     try:
         # We will save the file to disk for possible data collection.
         imagefile = flask.request.files['imagefile']
@@ -186,7 +186,6 @@ class ImageCaptioner(object):
             cnn_model_params = default_args['cnn_model_params']
             rnn_model = default_args['rnn_model']
 
-
             def predict(in_data, net):
                 """
                 Get the features for a batch of data using network
@@ -269,6 +268,29 @@ class ImageCaptioner(object):
                                     allftrs = batch_predict(filenames, net)
 
 
+            if args.gpu:
+                caffe.set_mode_gpu()
+            else:   
+                caffe.set_mode_cpu()
+
+            net = caffe.Net(cnn_model_def, cnn_model_params)
+            caffe.set_phase_test()
+
+            filenames = []
+            with open(args.files) as fp:
+                for line in fp:
+                    filename = line.strip().split()[0]
+                    filenames.append(filename)
+
+            allftrs = batch_predict(filenames, net)
+
+            # # store the features in a pickle file
+            # with open(args.out, 'w') as fp:
+            #     pickle.dump(allftrs, fp)
+
+            # save to mat file 
+            print "Saving file to vgg_feats.mat..."
+            io.savemat(UPLOAD_FOLDER + '/vgg_feats',{'feats':allftrs.T})
 
             #################### PREDICTION ##################
 
@@ -306,7 +328,7 @@ class ImageCaptioner(object):
                     else: 
                         f.write(v + '\n')
 
-                        img_names = open(os.path.join(root_path, 'tasks.txt'), 'r').read().splitlines()
+            img_names = open(os.path.join(root_path, 'tasks.txt'), 'r').read().splitlines()
 
             # starttime = time.time()
             # scores = self.net.predict([image], oversample=True).flatten()
