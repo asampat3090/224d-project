@@ -31,6 +31,8 @@ import cPickle as pickle
 import math
 import pdb
 
+
+sys.path.append('../')
 from imagernn.solver import Solver
 from imagernn.imagernn_utils import decodeGenerator, eval_split
 
