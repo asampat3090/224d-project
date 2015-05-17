@@ -27,9 +27,13 @@ like to evaluate.
 """
 
 def main(params):
-
+  dim = 300
   # load the checkpoint
   checkpoint_path = params['checkpoint_path']
+  glove_dict_path = '../../cs224d/project/vecDict.pickle'
+  with open(glove_dict_path, 'rb') as handle:
+    vec_dict = pickle.load(handle)
+
   print 'loading checkpoint %s' % (checkpoint_path, )
   checkpoint = pickle.load(open(checkpoint_path, 'rb'))
   checkpoint_params = checkpoint['params']
@@ -55,6 +59,7 @@ def main(params):
   features = features_struct['feats'] # this is a 4096 x N numpy array of features
   D,N = features.shape
 
+  fileNameToVector = {}
   # iterate over all images and predict sentences
   BatchGenerator = decodeGenerator(checkpoint_params)
   for n in xrange(N):
@@ -71,13 +76,23 @@ def main(params):
 
     # build up the output
     img_blob = {}
-    img_blob['img_path'] = img[' local_file_path']
+    img_blob['img_path'] = img['local_file_path']
 
     # encode the top prediction
     top_predictions = Ys[0] # take predictions for the first (and only) image we passed in
     top_prediction = top_predictions[0] # these are sorted with highest on top
     candidate = ' '.join([ixtoword[ix] for ix in top_prediction[1] if ix > 0]) # ix 0 is the END token, skip that
     print 'PRED: (%f) %s' % (top_prediction[0], candidate)
+
+    currSentenceVector = np.zeros(dim)
+    numWords = 0
+    for word in candidate.split():
+      if word in vec_dict:
+        currSentenceVector += vec_dict[word].astype(np.float)
+        numWords += 1
+    currSentenceVector /= numWords
+    fileNameToVector[img['local_file_path']] = currSentenceVector
+ 
     img_blob['candidate'] = {'text': candidate, 'logprob': top_prediction[0]}    
     blob['imgblobs'].append(img_blob)
 
@@ -85,6 +100,10 @@ def main(params):
   save_file = os.path.join(root_path, 'result_struct.json')
   print 'writing predictions to %s...' % (save_file, )
   json.dump(blob, open(save_file, 'w'))
+
+  # dump the fileNameToVector mapping to a pickle file
+  with open('fileNameToVector.pickle', 'wb') as handle:
+    pickle.dump(fileNameToVector, handle)
 
   # dump output html
   html = ''
