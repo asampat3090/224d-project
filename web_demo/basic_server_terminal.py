@@ -7,7 +7,7 @@ from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 
-app.config['UPLOAD_FOLDER'] = '/tmp/captionly_demos_uploads'
+app.config['UPLOAD_FOLDER'] = '/tmp/captionly_demo_uploads'
 
 @app.route('/')
 def hello_world():
