@@ -5,7 +5,7 @@ import json
 
 def main(params):
 	dim = 300 # Dimension of the GloVe vectors chosen
-	glove_dict_path = '../../cs224d/project/vecDict.pickle'
+	glove_dict_path = '../vecDict.pickle'
 	print 'Going to load vecDict'
   	with open(glove_dict_path, 'rb') as handle:
   		vec_dict = pickle.load(handle)
