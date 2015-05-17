@@ -198,21 +198,20 @@ class ImageCaptioner(object):
                 return features
 
 
-                def batch_predict(filenames, net):
-                    """
-                    Get the features for all images from filenames using a network
+            def batch_predict(filenames, net):
+                """
+                Get the features for all images from filenames using a network
 
-                    Inputs:
-                    filenames: a list of names of image files
+                Inputs:
+                filenames: a list of names of image files
 
-                    Returns:
-                    an array of feature vectors for the images in that file
-                    """
+                Returns:
+                an array of feature vectors for the images in that file
+                """
 
-                    N, C, H, W = net.blobs[net.inputs[0]].data.shape
-                    F = net.blobs[net.outputs[0]].data.shape[1]
-                    Nf = len(filenames)
-                #pdb.set_trace()
+                N, C, H, W = net.blobs[net.inputs[0]].data.shape
+                F = net.blobs[net.outputs[0]].data.shape[1]
+                Nf = len(filenames)
                 Hi, Wi, _ = imread(IMAGE_PATH + '/' + filenames[0]).shape
                 allftrs = np.zeros((Nf, F))
                 for i in range(0, Nf, N):
