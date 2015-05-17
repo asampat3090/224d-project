@@ -150,6 +150,10 @@ class ImageCaptioner(object):
     def __init__(self, cnn_model_def, cnn_model_params,rnn_model,raw_scale,image_dim,gpu_mode=True):
         
         logging.info('Loading CNN and associated files...')
+	self.cnn_model_def = cnn_model_def
+	self.cnn_model_params = cnn_model_params
+	self.rnn_model = rnn_model
+	self.gpu_mode = gpu_mode
         """
 	if gpu_mode:
             caffe.set_mode_gpu()
@@ -183,10 +187,11 @@ class ImageCaptioner(object):
         try:
 
             ################ FEATURE EXTRACTION ##############
-
-            cnn_model_def = default_args['cnn_model_def']
-            cnn_model_params = default_args['cnn_model_params']
-            rnn_model = default_args['rnn_model']
+	    
+            cnn_model_def = self.cnn_model_def
+            cnn_model_params = self.cnn_model_params
+            rnn_model = self.rnn_model
+	    
 
             def predict(in_data, net):
                 """
@@ -211,6 +216,7 @@ class ImageCaptioner(object):
                 Returns:
                 an array of feature vectors for the images in that file
                 """
+		IMAGE_PATH = '/tmp/captionly_demo_uploads'
 
                 N, C, H, W = net.blobs[net.inputs[0]].data.shape
                 F = net.blobs[net.outputs[0]].data.shape[1]
@@ -252,20 +258,21 @@ class ImageCaptioner(object):
 
                         return allftrs
 
-            if args.gpu:
+            if self.gpu_mode:
                 caffe.set_mode_gpu()
             else:   
                 caffe.set_mode_cpu()
 
             net = caffe.Net(cnn_model_def, cnn_model_params)
             caffe.set_phase_test()
-
+	    """
             filenames = []
             with open(args.files) as fp:
                 for line in fp:
                     filename = line.strip().split()[0]
                     filenames.append(filename)
-
+	    """
+	    filenames = ['2015-05-17_17:28:44.2513807EGRMwN.jpg']
             allftrs = batch_predict(filenames, net)
 
             # # store the features in a pickle file
@@ -298,7 +305,7 @@ class ImageCaptioner(object):
 
             # output blob which we will dump to JSON for visualizing the results
             blob = {} 
-            blob['params'] = params
+            #blob['params'] = params
             blob['checkpoint_params'] = checkpoint_params
             blob['imgblobs'] = []
 
@@ -312,7 +319,7 @@ class ImageCaptioner(object):
                     else: 
                         f.write(v + '\n')
 
-            img_names = open(os.path.join(root_path, 'tasks.txt'), 'r').read().splitlines()
+            #img_names = open(os.path.join(root_path, 'tasks.txt'), 'r').read().splitlines()
 
             # starttime = time.time()
             # scores = self.net.predict([image], oversample=True).flatten()
