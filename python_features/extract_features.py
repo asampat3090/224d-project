@@ -27,6 +27,8 @@ args = parser.parse_args()
 caffepath = args.caffe + '/python'
 sys.path.append(caffepath)
 
+import matplotlib
+matplotlib.use('Agg')
 import caffe
 
 def predict(in_data, net):
