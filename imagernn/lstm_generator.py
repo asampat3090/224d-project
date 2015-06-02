@@ -13,6 +13,10 @@ class LSTMGenerator:
 
     model = {}
     # Recurrent weights: take x_t, h_{t-1}, and bias unit
+    # x_t : N x 4D
+    # h_{t-1} (m_{t-1}) : D x 4D
+    # bias: 1 x 4D
+
     # and produce the 3 gates and the input to cell signal
     model['WLSTM'] = initw(input_size + hidden_size + 1, 4 * hidden_size)
     # Decoder weights (e.g. mapping to vocabulary)
@@ -56,11 +60,14 @@ class LSTMGenerator:
         X *= U # drop!
 
     # follows http://arxiv.org/pdf/1409.2329.pdf
-    WLSTM = model['WLSTM']
+    WLSTM = model['WLSTM'] 
     n = X.shape[0]
     d = model['Wd'].shape[0] # size of hidden layer
+    # Hin : N x (N+D+1)
     Hin = np.zeros((n, WLSTM.shape[0])) # xt, ht-1, bias
+    # Hout: N x D
     Hout = np.zeros((n, d))
+    # IFOG = N x 4D
     IFOG = np.zeros((n, d * 4))
     IFOGf = np.zeros((n, d * 4)) # after nonlinearity
     C = np.zeros((n, d))

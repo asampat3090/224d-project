@@ -216,7 +216,7 @@ class ImageCaptioner(object):
                 Returns:
                 an array of feature vectors for the images in that file
                 """
-		IMAGE_PATH = '/tmp/captionly_demo_uploads'
+		        IMAGE_PATH = '/tmp/captionly_demo_uploads'
 
                 N, C, H, W = net.blobs[net.inputs[0]].data.shape
                 F = net.blobs[net.outputs[0]].data.shape[1]
@@ -265,14 +265,14 @@ class ImageCaptioner(object):
 
             net = caffe.Net(cnn_model_def, cnn_model_params)
             caffe.set_phase_test()
-	    """
+            """
             filenames = []
             with open(args.files) as fp:
                 for line in fp:
                     filename = line.strip().split()[0]
                     filenames.append(filename)
-	    """
-	    filenames = ['2015-05-17_17:28:44.2513807EGRMwN.jpg']
+            """
+            filenames = ['2015-05-17_17:28:44.2513807EGRMwN.jpg']
             allftrs = batch_predict(filenames, net)
 
             # # store the features in a pickle file
@@ -318,6 +318,73 @@ class ImageCaptioner(object):
                         f.write(v)
                     else: 
                         f.write(v + '\n')
+
+
+            # load the features for all images
+            features_path = os.path.join(root_path, 'vgg_feats.mat')
+            features_struct = scipy.io.loadmat(features_path)
+            features = features_struct['feats'] # this is a 4096 x N numpy array of features
+            D,N = features.shape
+
+            fileNameToVector = {}
+            # iterate over all images and predict sentences
+            BatchGenerator = decodeGenerator(checkpoint_params)
+            for n in xrange(N):
+                print 'image %d/%d:' % (n, N)
+
+                # encode the image
+                img = {}
+                img['feat'] = features[:, n]
+                img['local_file_path'] =img_names[n]
+
+                # perform the work. heavy lifting happens inside
+                kwparams = { 'beam_size' : params['beam_size'] }
+                Ys = BatchGenerator.predict([{'image':img}], model, checkpoint_params, **kwparams)
+
+                # build up the output
+                img_blob = {}
+                img_blob['img_path'] = img['local_file_path']
+
+                # encode the top prediction
+                top_predictions = Ys[0] # take predictions for the first (and only) image we passed in
+                top_prediction = top_predictions[0] # these are sorted with highest on top
+                candidate = ' '.join([ixtoword[ix] for ix in top_prediction[1] if ix > 0]) # ix 0 is the END token, skip that
+                print 'PRED: (%f) %s' % (top_prediction[0], candidate)
+
+                currSentenceVector = np.zeros(dim)
+                numWords = 0
+                for word in candidate.split():
+                  if word in vec_dict:
+                    currSentenceVector += vec_dict[word].astype(np.float)
+                    numWords += 1
+                currSentenceVector /= numWords
+                fileNameToVector[img['local_file_path']] = currSentenceVector
+
+                img_blob['candidate'] = {'text': candidate, 'logprob': top_prediction[0]}    
+                blob['imgblobs'].append(img_blob)
+
+            # dump result struct to file
+            save_file = os.path.join(root_path, 'result_struct.json')
+            print 'writing predictions to %s...' % (save_file, )
+            json.dump(blob, open(save_file, 'w'))
+
+            # dump the fileNameToVector mapping to a pickle file
+            with open('fileNameToVector.pickle', 'wb') as handle:
+            pickle.dump(fileNameToVector, handle)
+
+            # dump output html
+            html = ''
+            for img in blob['imgblobs']:
+                html += '<img src="%s" height="400"><br>' % (img['img_path'], )
+                html += '(%f) %s <br><br>' % (img['candidate']['logprob'], img['candidate']['text'])
+            html_file = os.path.join(root_path, 'result.html')
+            print 'writing html result file to %s...' % (html_file, )
+            open(html_file, 'w').write(html)
+
+            return render_template("result.html", title = 'Results')
+
+            # return (True, meta, result, '%.3f' % (endtime - starttime))
+
 
             #img_names = open(os.path.join(root_path, 'tasks.txt'), 'r').read().splitlines()
 

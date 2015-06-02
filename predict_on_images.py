@@ -86,6 +86,8 @@ def main(params):
     candidate = ' '.join([ixtoword[ix] for ix in top_prediction[1] if ix > 0]) # ix 0 is the END token, skip that
     print 'PRED: (%f) %s' % (top_prediction[0], candidate)
 
+    
+    # Calculate the sentence vector using avg of GLoVe word vectors
     currSentenceVector = np.zeros(dim)
     numWords = 0
     for word in candidate.split():

@@ -14,7 +14,7 @@ class GRUGenerator:
     model = {}
     # Recurrent weights: take x_t, h_{t-1}, and bias unit
     # and produce the 3 gates and the input to cell signal
-    model['WGRU'] = initw(input_size + hidden_size + 1, 4 * hidden_size)
+    model['WGRU'] = initw(input_size + hidden_size + 1, 3 * hidden_size)
     # Decoder weights (e.g. mapping to vocabulary)
     model['Wd'] = initw(hidden_size, output_size) # decoder
     model['bd'] = np.zeros((1, output_size))
