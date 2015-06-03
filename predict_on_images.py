@@ -96,7 +96,7 @@ def main(params):
       if st.stem(word) in vec_dict:
         currSentenceVector += vec_dict[st.stem(word)].astype(np.float)
         numWords += 1
-      elif st.stem(word)+'e' in vec_dict
+      elif st.stem(word)+'e' in vec_dict:
         currSentenceVector += vec_dict[st.stem(word)+'e'].astype(np.float)
         numWords += 1
 
