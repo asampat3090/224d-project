@@ -6,6 +6,7 @@ import os
 from PIL import Image
 import matplotlib.pyplot as plt
 import pdb
+from nltk.stem.snowball import EnglishStemmer
 
 def main():
   dim = 300 # Dimension of the GloVe vectors chosen
@@ -23,13 +24,19 @@ def main():
   # Find images from Flicker dataset
   flikr8k_path = '../Flicker8k_Dataset/'
 
+  # initialize stemmer for search in GLoVe vector space
+  st = EnglishStemmer()
+
   while True: 
     sentence = raw_input('Please enter search query:')
     sentenceVector = np.zeros(dim)
     numWords = 0
     for word in sentence.split():
-      if word in vec_dict:
-        sentenceVector += vec_dict[word].astype(np.float)
+      if st.stem(word) in vec_dict:
+        sentenceVector += vec_dict[st.stem(word)].astype(np.float)
+        numWords += 1
+      else if st.stem(word)+'e' in vec_dict
+        sentenceVector += vec_dict[st.stem(word)+'e'].astype(np.float)
         numWords += 1
 
    	sentenceVector /= numWords
