@@ -9,6 +9,7 @@ import cPickle as pickle
 import math
 import scipy.io
 import pdb
+from nltk.stem.snowball import EnglishStemmer
 
 from imagernn.solver import Solver
 from imagernn.imagernn_utils import decodeGenerator, eval_split
@@ -88,12 +89,17 @@ def main(params):
 
     
     # Calculate the sentence vector using avg of GLoVe word vectors
+    st = EnglishStemmer()
     currSentenceVector = np.zeros(dim)
     numWords = 0
     for word in candidate.split():
-      if word in vec_dict:
-        currSentenceVector += vec_dict[word].astype(np.float)
+      if st.stem(word) in vec_dict:
+        currSentenceVector += vec_dict[st.stem(word)].astype(np.float)
         numWords += 1
+      else if st.stem(word)+'e' in vec_dict
+        currSentenceVector += vec_dict[st.stem(word)+'e'].astype(np.float)
+        numWords += 1
+        
     currSentenceVector /= numWords
     fileNameToVector[img['local_file_path']] = currSentenceVector
  
