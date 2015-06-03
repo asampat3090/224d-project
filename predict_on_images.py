@@ -96,10 +96,10 @@ def main(params):
       if st.stem(word) in vec_dict:
         currSentenceVector += vec_dict[st.stem(word)].astype(np.float)
         numWords += 1
-      else if st.stem(word)+'e' in vec_dict
+      elif st.stem(word)+'e' in vec_dict
         currSentenceVector += vec_dict[st.stem(word)+'e'].astype(np.float)
         numWords += 1
-        
+
     currSentenceVector /= numWords
     fileNameToVector[img['local_file_path']] = currSentenceVector
  
