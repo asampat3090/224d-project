@@ -6,3 +6,4 @@ Flickr8k_text/
 cv/flickr8k_cnn_lstm_v1.p
 example_images.tar.gz
 cv/*
+data/flickr8k/*
