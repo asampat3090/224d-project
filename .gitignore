@@ -7,3 +7,6 @@ cv/flickr8k_cnn_lstm_v1.p
 example_images.tar.gz
 cv/*
 data/flickr8k/*
+data/example_images/
+data/example_imagesOld/
+VGG_ILSVRC_16_layers.caffemodel

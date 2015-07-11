@@ -62,7 +62,6 @@ def batch_predict(filenames, net):
     N, C, H, W = net.blobs[net.inputs[0]].data.shape
     F = net.blobs[net.outputs[0]].data.shape[1]
     Nf = len(filenames)
-    #pdb.set_trace()
     Hi, Wi, _ = imread(IMAGE_PATH + '/' + filenames[0]).shape
     allftrs = np.zeros((Nf, F))
     for i in range(0, Nf, N):
@@ -101,13 +100,14 @@ def batch_predict(filenames, net):
     return allftrs
 
 
-if args.gpu:
-    caffe.set_mode_gpu()
-else:   
-    caffe.set_mode_cpu()
-
 net = caffe.Net(args.model_def, args.model)
-caffe.set_phase_test()
+
+if args.gpu:
+    net.set_mode_gpu()
+else:   
+    net.set_mode_cpu()
+
+net.set_phase_test()
 
 filenames = []
 with open(args.files) as fp:
