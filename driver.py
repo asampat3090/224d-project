@@ -8,6 +8,7 @@ import socket
 import os
 import sys
 import cPickle as pickle
+import pdb
 
 from imagernn.data_provider import getDataProvider
 from imagernn.solver import Solver
@@ -20,9 +21,10 @@ def preProBuildWordVocab(sentence_iterator, word_count_threshold):
   t0 = time.time()
   word_counts = {}
   nsents = 0
+  
   for sent in sentence_iterator:
     nsents += 1
-    for w in sent['tokens']:
+    for w in sent.split(' '):
       word_counts[w] = word_counts.get(w, 0) + 1
   vocab = [w for w in word_counts if word_counts[w] >= word_count_threshold]
   print 'filtered words from %d to %d in %.2fs' % (len(word_counts), len(vocab), time.time() - t0)
@@ -74,7 +76,7 @@ def RNNGenCost(batch, model, params, misc):
   for i,pair in enumerate(batch):
     img = pair['image']
     # ground truth indeces for this sentence we expect to see
-    gtix = [ wordtoix[w] for w in pair['sentence']['tokens'] if w in wordtoix ]
+    gtix = [ wordtoix[w] for w in pair['sentence'].split() if w in wordtoix ]
     gtix.append(0) # don't forget END token must be predicted in the end!
     # fetch the predicted probabilities, as rows
     Y = Ys[i]
@@ -288,12 +290,12 @@ if __name__ == "__main__":
 
   # optimization parameters
   parser.add_argument('-c', '--regc', dest='regc', type=float, default=1e-8, help='regularization strength')
-  parser.add_argument('-m', '--max_epochs', dest='max_epochs', type=int, default=50, help='number of epochs to train for')
+  parser.add_argument('-m', '--max_epochs', dest='max_epochs', type=int, default=20, help='number of epochs to train for')
   parser.add_argument('--solver', dest='solver', type=str, default='rmsprop', help='solver type: vanilla/adagrad/adadelta/rmsprop')
   parser.add_argument('--momentum', dest='momentum', type=float, default=0.0, help='momentum for vanilla sgd')
   parser.add_argument('--decay_rate', dest='decay_rate', type=float, default=0.999, help='decay rate for adadelta/rmsprop')
   parser.add_argument('--smooth_eps', dest='smooth_eps', type=float, default=1e-8, help='epsilon smoothing for rmsprop/adagrad/adadelta')
-  parser.add_argument('-l', '--learning_rate', dest='learning_rate', type=float, default=1e-3, help='solver learning rate')
+  parser.add_argument('-l', '--learning_rate', dest='learning_rate', type=float, default=1e-4, help='solver learning rate')
   parser.add_argument('-b', '--batch_size', dest='batch_size', type=int, default=100, help='batch size')
   parser.add_argument('--grad_clip', dest='grad_clip', type=float, default=5, help='clip gradients (normalized by batch size)? elementwise. if positive, at what threshold?')
   parser.add_argument('--drop_prob_encoder', dest='drop_prob_encoder', type=float, default=0.5, help='what dropout to apply right after the encoder to an RNN/LSTM')
