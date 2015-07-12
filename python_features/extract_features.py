@@ -64,6 +64,7 @@ def batch_predict(filenames, net):
     Nf = len(filenames)
     Hi, Wi, _ = imread(IMAGE_PATH + '/' + filenames[0]).shape
     allftrs = np.zeros((Nf, F))
+    count_wrong = 0
     for i in range(0, Nf, N):
         in_data = np.zeros((N, C, H, W), dtype=np.float32)
 
@@ -73,10 +74,10 @@ def batch_predict(filenames, net):
 
         batch_images = np.zeros((Nb, 3, H, W))
         for j,fname in enumerate(batch_filenames):
-            im = imread(IMAGE_PATH + '/' + fname)
-            if len(im.shape) == 2:
-                im = np.tile(im[:,:,np.newaxis], (1,1,3))
             try:
+                im = imread(IMAGE_PATH + '/' + fname)
+                if len(im.shape) == 2:
+                   im = np.tile(im[:,:,np.newaxis], (1,1,3))
                 # RGB -> BGR
                 im = im[:,:,(2,1,0)]
                 # mean subtraction
@@ -87,8 +88,9 @@ def batch_predict(filenames, net):
                 im = np.transpose(im, (2, 0, 1))
                 batch_images[j,:,:,:] = im
             except:
+                count_wrong+=1
+                print 'Error found'           
                 continue
-
         # insert into correct place
         in_data[0:len(batch_range), :, :, :] = batch_images
 
@@ -99,7 +101,8 @@ def batch_predict(filenames, net):
             allftrs[i+j,:] = ftrs[j,:]
 
         print 'Done %d/%d files' % (i+len(batch_range), len(filenames))
-
+    
+    print count_wrong
     return allftrs
 
 

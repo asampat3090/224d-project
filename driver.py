@@ -43,7 +43,7 @@ def preProBuildWordVocab(sentence_iterator, word_count_threshold):
     ix += 1
 
   # compute bias vector, which is related to the log probability of the distribution
-  # of the labels (words) and how often they occur. We will use this vector to initialize
+  # of the labels(words) and how often they occur. We will use this vector to initialize
   # the decoder weights, so that the loss function doesnt show a huge increase in performance
   # very quickly (which is just the network learning this anyway, for the most part). This makes
   # the visualizations of the cost function nicer because it doesn't look like a hockey stick.
