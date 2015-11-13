@@ -122,7 +122,7 @@ with open(args.files) as fp:
         filenames.append(filename)
 
 allftrs = batch_predict(filenames, net)
-
+pdb.set_trace()
 # # store the features in a pickle file
 # with open(args.out, 'w') as fp:
 #     pickle.dump(allftrs, fp)
