@@ -5,6 +5,7 @@ import scipy.io
 import codecs
 from collections import defaultdict
 import pdb
+from sets import Set
 
 class BasicDataProvider:
   def __init__(self, dataset):
@@ -20,6 +21,8 @@ class BasicDataProvider:
     # pdb.set_trace()
     self.dataset = json.load(open(dataset_path, 'r'))
 
+    # pdb.set_trace()
+
     # load the image features into memory
     features_path = os.path.join(self.dataset_root, 'vgg_feats.mat')
     print 'BasicDataProvider: reading %s' % (features_path, )
@@ -27,10 +30,26 @@ class BasicDataProvider:
     self.features = features_struct['feats']
     print self.features.shape
 
+    # Load tasks.txt file
+    img_order = os.path.join(self.dataset_root, 'tasks.txt')
+    self.image_filenames = []
+    for l in open(img_order,'rb'):
+      self.image_filenames.append(l.strip())
+
     # group images by their train/val/test split into a dictionary -> list structure
     self.split = defaultdict(list)
-    for img in self.dataset['images']:
-      self.split[img['split']].append(img)
+    # checkId = 318556
+    # for 
+    # pdb.set_trace()
+    imgIdSet = Set([])
+    annotationList = []
+    for annotation in self.dataset['annotations']:      
+      if annotation['image_id'] not in imgIdSet:
+        imgIdSet.add(annotation['image_id'])
+        annotationList.append(annotation)
+
+    for img in annotationList:      
+      self.split['train'].append(img)
 
   # "PRIVATE" FUNCTIONS
   # in future we may want to create copies here so that we don't touch the 
@@ -42,10 +61,19 @@ class BasicDataProvider:
     """ create an image structure for the driver """
 
     # lazily fill in some attributes
-    if not 'local_file_path' in img: img['local_file_path'] = os.path.join(self.image_root, img['filename'])
+    #if not 'local_file_path' in img: img['local_file_path'] = os.path.join(self.image_root, img['filename'])
     if not 'feat' in img: # also fill in the features
-      feature_index = img['imgid'] # NOTE: imgid is an integer, and it indexes into features
-      img['feat'] = self.features[:,feature_index]
+
+      real_file_name = 'COCO_train2014_' + str(img['image_id']).zfill(12) + '.jpg'
+      # pdb.set_trace()
+      i = 0
+
+      for fileName in self.image_filenames:
+        i+=1
+        if real_file_name == fileName:
+          feature_index = i
+          # pdb.set_trace()
+          img['feat'] = self.features[:,feature_index]
     return img
 
   def _getSentence(self, sent):
@@ -57,18 +85,17 @@ class BasicDataProvider:
 
   def getSplitSize(self, split, ofwhat = 'sentences'):
     """ return size of a split, either number of sentences or number of images """
-    if ofwhat == 'sentences': 
-      return sum(len(img['sentences']) for img in self.split[split])
-    else: # assume images
-      return len(self.split[split])
+    # if ofwhat == 'sentences': 
+    #   return sum([1 for img in self.split[split]]) 
+    # else: # assume images
+    return len(self.split[split])
 
   def sampleImageSentencePair(self, split = 'train'):
     """ sample image sentence pair from a split """
     images = self.split[split]
 
     img = random.choice(images)
-    sent = random.choice(img['sentences'])
-
+    sent = img['caption']
     out = {}
     out['image'] = self._getImage(img)
     out['sentence'] = self._getSentence(sent)
@@ -77,31 +104,31 @@ class BasicDataProvider:
   def iterImageSentencePair(self, split = 'train', max_images = -1):
     for i,img in enumerate(self.split[split]):
       if max_images >= 0 and i >= max_images: break
-      for sent in img['sentences']:
-        out = {}
-        out['image'] = self._getImage(img)
-        out['sentence'] = self._getSentence(sent)
-        yield out
+      out = {}
+      out['image'] = self._getImage(img)
+      sent = img['caption']
+      out['sentence'] = self._getSentence(sent)
+      yield out
 
   def iterImageSentencePairBatch(self, split = 'train', max_images = -1, max_batch_size = 100):
     batch = []
     for i,img in enumerate(self.split[split]):
       if max_images >= 0 and i >= max_images: break
-      for sent in img['sentences']:
-        out = {}
-        out['image'] = self._getImage(img)
-        out['sentence'] = self._getSentence(sent)
-        batch.append(out)
-        if len(batch) >= max_batch_size:
-          yield batch
-          batch = []
+      out = {}
+      out['image'] = self._getImage(img)
+      sent = img['caption']
+      out['sentence'] = self._getSentence(sent)
+      batch.append(out)
+      if len(batch) >= max_batch_size:
+        yield batch
+        batch = []
     if batch:
       yield batch
 
   def iterSentences(self, split = 'train'):
     for img in self.split[split]: 
-      for sent in img['sentences']:
-        yield self._getSentence(sent)
+      sent = img['caption']
+      yield self._getSentence(sent)
 
   def iterImages(self, split = 'train', shuffle = False, max_images = -1):
     imglist = self.split[split]

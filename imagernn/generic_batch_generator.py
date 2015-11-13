@@ -3,6 +3,7 @@ import code
 from imagernn.utils import merge_init_structs, initw, accumNpDicts
 from imagernn.lstm_generator import LSTMGenerator
 from imagernn.rnn_generator import RNNGenerator
+import pdb
 
 def decodeGenerator(generator):
   if generator == 'lstm':
@@ -80,7 +81,8 @@ class GenericBatchGenerator:
       # from Ws. Then arrange them in a single matrix Xs
       # Note that we are setting the start token as first vector
       # and then all the words afterwards. And start token is the first row of Ws
-      ix = [0] + [ wordtoix[w] for w in x['sentence']['tokens'] if w in wordtoix ]
+      # pdb.set_trace()
+      ix = [0] + [ wordtoix[w] for w in x['sentence'].split() if w in wordtoix ]
       Xs = np.row_stack( [Ws[j, :] for j in ix] )
       Xi = Xe[i,:]
 
